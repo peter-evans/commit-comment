@@ -1,0 +1,21 @@
+name: 'Commit Comment'
+description: 'Create a comment for a commit on GitHub'
+inputs:
+  token:
+    description: 'The GitHub authentication token'
+    required: true
+  sha:
+    description: 'The commit SHA. Defaults to the current commit.'
+  body:
+    description: 'The contents of the comment.'
+    required: true
+  path:
+    description: 'Relative path of the file to comment on.'
+  position:
+    description: 'Line index in the diff to comment on.'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  icon: 'message-square'  
+  color: 'gray-dark'

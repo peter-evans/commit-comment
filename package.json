@@ -1,0 +1,27 @@
+{
+  "name": "commit-comment",
+  "version": "1.0.0",
+  "description": "Create a comment for a commit on GitHub",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build index.js -o dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peter-evans/commit-comment.git"
+  },
+  "keywords": [],
+  "author": "Peter Evans",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/peter-evans/commit-comment/issues"
+  },
+  "homepage": "https://github.com/peter-evans/commit-comment#readme",
+  "dependencies": {
+    "@actions/core": "^1.1.1",
+    "@octokit/request": "^5.1.0"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "^0.20.5"
+  }
+}
