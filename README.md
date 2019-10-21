@@ -12,7 +12,12 @@ A GitHub action to create a comment for a commit on GitHub.
         uses: peter-evans/commit-comment@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          body: This is the best commit ever!
+          body: |
+            This is a multi-line test comment
+            - With GitHub **Markdown**
+            - Created by [commit-comment][1]
+
+            [1]: https://github.com/peter-evans/commit-comment
 ```
 
 ## Parameters
