@@ -9,7 +9,7 @@ A GitHub action to create a comment for a commit on GitHub.
 
 ```yml
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v1.0.1
+        uses: peter-evans/commit-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
@@ -34,7 +34,7 @@ Here is an example setting all of the input parameters.
 
 ```yml
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v1.0.1
+        uses: peter-evans/commit-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           sha: 843dea1cc2e721163c20a5c876b5b155f7f3aa75
