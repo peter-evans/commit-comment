@@ -48,6 +48,19 @@ Here is an example setting all of the input parameters.
           position: 1
 ```
 
+## Evaluating environment variables
+
+Environment variables can be evaluated in the `body` input as follows.
+
+```yml
+      - name: Create commit comment
+        uses: peter-evans/commit-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            My env var: ${process.env.MY_ENV_VAR}
+```
+
 ## License
 
 [MIT](LICENSE)
