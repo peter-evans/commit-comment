@@ -400,7 +400,7 @@ async function run() {
         headers: {
           authorization: `token ${inputs.token}`
         },
-        body: eval('`'+inputs.body+'`'),
+        body: `${inputs.body}`,
         path: `${inputs.path}`,
         position: `${inputs.position}`
       }
