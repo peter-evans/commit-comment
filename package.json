@@ -4,7 +4,7 @@
   "description": "Create a comment for a commit on GitHub",
   "main": "index.js",
   "scripts": {
-    "build": "ncc build index.js -o dist"
+    "package": "ncc build index.js -o dist"
   },
   "repository": {
     "type": "git",
