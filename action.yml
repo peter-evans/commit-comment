@@ -3,6 +3,7 @@ description: 'Create a comment for a commit on GitHub'
 inputs:
   token:
     description: 'The GitHub authentication token'
+    default: ${{ github.token }}
     required: true
   sha:
     description: 'The commit SHA. Defaults to the current commit.'
