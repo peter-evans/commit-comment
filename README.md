@@ -11,7 +11,6 @@ A GitHub action to create a comment for a commit on GitHub.
       - name: Create commit comment
         uses: peter-evans/commit-comment@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             This is a multi-line test comment
             - With GitHub **Markdown**
@@ -22,7 +21,7 @@ A GitHub action to create a comment for a commit on GitHub.
 
 ## Parameters
 
-- `token` (**required**) - The GitHub authentication token
+- `token` - The GitHub authentication token. Defaults to `GITHUB_TOKEN`.
 - `sha` - The commit SHA. Defaults to the current commit.
 - `body` (**required**) - The contents of the comment.
 - `path` - Relative path of the file to comment on.
@@ -46,19 +45,6 @@ Here is an example setting all of the input parameters.
             [1]: https://github.com/peter-evans/commit-comment
           path: path/to/file.txt
           position: 1
-```
-
-## Evaluating environment variables
-
-Environment variables can be evaluated in the `body` input as follows.
-
-```yml
-      - name: Create commit comment
-        uses: peter-evans/commit-comment@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            My env var: ${process.env.MY_ENV_VAR}
 ```
 
 ## License
