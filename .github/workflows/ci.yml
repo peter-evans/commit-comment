@@ -24,7 +24,7 @@ jobs:
       - id: vars
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then \
-            echo "::set-output name=sha::${{ github.event.pull_request.head.repo.sha }}"; \
+            echo "::set-output name=sha::${{ github.event.pull_request.head.sha }}"; \
           else \
             echo "::set-output name=sha::${{ github.sha }}"; \
           fi
