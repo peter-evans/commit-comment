@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(104);
+/******/ 		return __webpack_require__(676);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -346,13 +346,21 @@ const windowsRelease = release => {
 
 	const ver = (version || [])[0];
 
-	// Server 2008, 2012 and 2016 versions are ambiguous with desktop versions and must be detected at runtime.
+	// Server 2008, 2012, 2016, and 2019 versions are ambiguous with desktop versions and must be detected at runtime.
 	// If `release` is omitted or we're on a Windows system, and the version number is an ambiguous version
 	// then use `wmic` to get the OS caption: https://msdn.microsoft.com/en-us/library/aa394531(v=vs.85).aspx
-	// If the resulting caption contains the year 2008, 2012 or 2016, it is a server version, so return a server OS name.
+	// If `wmic` is obsoloete (later versions of Windows 10), use PowerShell instead.
+	// If the resulting caption contains the year 2008, 2012, 2016 or 2019, it is a server version, so return a server OS name.
 	if ((!release || release === os.release()) && ['6.1', '6.2', '6.3', '10.0'].includes(ver)) {
-		const stdout = execa.sync('wmic', ['os', 'get', 'Caption']).stdout || '';
-		const year = (stdout.match(/2008|2012|2016/) || [])[0];
+		let stdout;
+		try {
+			stdout = execa.sync('powershell', ['(Get-CimInstance -ClassName Win32_OperatingSystem).caption']).stdout || '';
+		} catch (_) {
+			stdout = execa.sync('wmic', ['os', 'get', 'Caption']).stdout || '';
+		}
+
+		const year = (stdout.match(/2008|2012|2016|2019/) || [])[0];
+
 		if (year) {
 			return `Server ${year}`;
 		}
@@ -370,49 +378,6 @@ module.exports = windowsRelease;
 /***/ (function(module) {
 
 module.exports = require("os");
-
-/***/ }),
-
-/***/ 104:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
-
-const { inspect } = __webpack_require__(669);
-const core = __webpack_require__(470);
-const { request } = __webpack_require__(753);
-
-async function run() {
-  try {
-    const inputs = {
-      token: core.getInput("token"),
-      sha: core.getInput("sha"),
-      body: core.getInput("body"),
-      path: core.getInput("path"),
-      position: core.getInput("position")
-    };
-    core.debug(`Inputs: ${inspect(inputs)}`);
-
-    const sha = inputs.sha ? inputs.sha : process.env.GITHUB_SHA;
-    core.debug(`SHA: ${sha}`);
-
-    await request(
-      `POST /repos/${process.env.GITHUB_REPOSITORY}/commits/${sha}/comments`,
-      {
-        headers: {
-          authorization: `token ${inputs.token}`
-        },
-        body: `${inputs.body}`,
-        path: `${inputs.path}`,
-        position: `${inputs.position}`
-      }
-    );
-  } catch (error) {
-    core.debug(inspect(error));
-    core.setFailed(error.message);
-  }
-}
-
-run();
-
 
 /***/ }),
 
@@ -633,6 +598,7 @@ module.exports = require("https");
 // ignored, since we can never get coverage for them.
 var assert = __webpack_require__(357)
 var signals = __webpack_require__(654)
+var isWin = /^win/i.test(process.platform)
 
 var EE = __webpack_require__(614)
 /* istanbul ignore if */
@@ -722,6 +688,11 @@ signals.forEach(function (sig) {
       /* istanbul ignore next */
       emit('afterexit', null, sig)
       /* istanbul ignore next */
+      if (isWin && sig === 'SIGHUP') {
+        // "SIGHUP" throws an `ENOSYS` error on Windows,
+        // so use a supported signal instead
+        sig = 'SIGINT'
+      }
       process.kill(process.pid, sig)
     }
   }
@@ -2326,7 +2297,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var isPlainObject = _interopDefault(__webpack_require__(696));
-var universalUserAgent = __webpack_require__(796);
+var universalUserAgent = __webpack_require__(562);
 
 function lowercaseKeys(object) {
   if (!object) {
@@ -2591,7 +2562,7 @@ function parse(options) {
   // https://fetch.spec.whatwg.org/#methods
   let method = options.method.toUpperCase(); // replace :varname with {varname} to make it RFC 6570 compatible
 
-  let url = options.url.replace(/:([a-z]\w+)/g, "{+$1}");
+  let url = (options.url || "/").replace(/:([a-z]\w+)/g, "{+$1}");
   let headers = Object.assign({}, options.headers);
   let body;
   let parameters = omit(options, ["method", "baseUrl", "url", "headers", "request", "mediaType"]); // extract variable names from URL to calculate remaining variables later
@@ -2676,9 +2647,11 @@ function withDefaults(oldDefaults, newDefaults) {
   });
 }
 
-const VERSION = "5.4.1";
+const VERSION = "5.5.3";
 
-const userAgent = `octokit-endpoint.js/${VERSION} ${universalUserAgent.getUserAgent()}`;
+const userAgent = `octokit-endpoint.js/${VERSION} ${universalUserAgent.getUserAgent()}`; // DEFAULTS has all properties set that EndpointOptions has, except url.
+// So we use RequestParameters and add method as additional required property.
+
 const DEFAULTS = {
   method: "GET",
   baseUrl: "https://api.github.com",
@@ -4696,7 +4669,7 @@ class RequestError extends Error {
       }
 
     });
-    this.headers = options.headers; // redact request credentials without mutating original request options
+    this.headers = options.headers || {}; // redact request credentials without mutating original request options
 
     const requestCopy = Object.assign({}, options.request);
 
@@ -4717,6 +4690,7 @@ class RequestError extends Error {
 }
 
 exports.RequestError = RequestError;
+//# sourceMappingURL=index.js.map
 
 
 /***/ }),
@@ -4974,6 +4948,36 @@ function resolveCommand(parsed) {
 }
 
 module.exports = resolveCommand;
+
+
+/***/ }),
+
+/***/ 562:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var osName = _interopDefault(__webpack_require__(2));
+
+function getUserAgent() {
+  try {
+    return `Node.js/${process.version.substr(1)} (${osName()}; ${process.arch})`;
+  } catch (error) {
+    if (/wmic os get Caption/.test(error.message)) {
+      return "Windows <version undetectable>";
+    }
+
+    return "<environment undetectable>";
+  }
+}
+
+exports.getUserAgent = getUserAgent;
+//# sourceMappingURL=index.js.map
 
 
 /***/ }),
@@ -5243,6 +5247,49 @@ if (process.platform === 'linux') {
 /***/ (function(module) {
 
 module.exports = require("util");
+
+/***/ }),
+
+/***/ 676:
+/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+
+const { inspect } = __webpack_require__(669);
+const core = __webpack_require__(470);
+const { request } = __webpack_require__(753);
+
+async function run() {
+  try {
+    const inputs = {
+      token: core.getInput("token"),
+      sha: core.getInput("sha"),
+      body: core.getInput("body"),
+      path: core.getInput("path"),
+      position: core.getInput("position")
+    };
+    core.debug(`Inputs: ${inspect(inputs)}`);
+
+    const sha = inputs.sha ? inputs.sha : process.env.GITHUB_SHA;
+    core.debug(`SHA: ${sha}`);
+
+    await request(
+      `POST /repos/${process.env.GITHUB_REPOSITORY}/commits/${sha}/comments`,
+      {
+        headers: {
+          authorization: `token ${inputs.token}`
+        },
+        body: `${inputs.body}`,
+        path: `${inputs.path}`,
+        position: `${inputs.position}`
+      }
+    );
+  } catch (error) {
+    core.debug(inspect(error));
+    core.setFailed(error.message);
+  }
+}
+
+run();
+
 
 /***/ }),
 
