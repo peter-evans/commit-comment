@@ -31,13 +31,6 @@ jobs:
         with:
           name: action.yml
           path: action.yml
-      - id: vars
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then \
-            echo "::set-output name=sha::${{ github.event.pull_request.head.sha }}"; \
-          else \
-            echo "::set-output name=sha::${{ github.sha }}"; \
-          fi
 
   test:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
@@ -62,10 +55,9 @@ jobs:
       - name: Test create commit comment
         uses: ./
         with:
-          sha: ${{ needs.build.outputs.sha }}
           body: |
             This is a multi-line test comment
-            - With GitHub **Markdown**
+            - With GitHub **Markdown** :sparkles:
             - Created by [commit-comment][1]
 
             [1]: https://github.com/peter-evans/commit-comment
