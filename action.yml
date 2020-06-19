@@ -4,7 +4,9 @@ inputs:
   token:
     description: 'The GitHub authentication token'
     default: ${{ github.token }}
-    required: true
+  repository:
+    description: 'The target repository. Defaults to the current repository.'
+    default: ${{ github.repository }}
   sha:
     description: 'The commit SHA. Defaults to the current commit.'
   body:

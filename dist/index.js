@@ -6786,7 +6786,6 @@ module.exports = require("util");
 const { inspect } = __webpack_require__(669);
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
-const { request } = __webpack_require__(753);
 
 function getSha() {
   if (github.context.eventName == "pull_request") {
@@ -6800,6 +6799,7 @@ async function run() {
   try {
     const inputs = {
       token: core.getInput("token"),
+      repository: core.getInput("repository"),
       sha: core.getInput("sha"),
       body: core.getInput("body"),
       path: core.getInput("path"),
@@ -6807,20 +6807,21 @@ async function run() {
     };
     core.debug(`Inputs: ${inspect(inputs)}`);
 
+    const [owner, repo] = inputs.repository.split("/");
+
     const sha = inputs.sha ? inputs.sha : getSha();
     core.debug(`SHA: ${sha}`);
 
-    await request(
-      `POST /repos/${process.env.GITHUB_REPOSITORY}/commits/${sha}/comments`,
-      {
-        headers: {
-          authorization: `token ${inputs.token}`,
-        },
-        body: `${inputs.body}`,
-        path: `${inputs.path}`,
-        position: `${inputs.position}`,
-      }
-    );
+    const octokit = github.getOctokit(inputs.token);
+
+    await octokit.repos.createCommitComment({
+      owner: owner,
+      repo: repo,
+      commit_sha: sha,
+      body: inputs.body,
+      path: inputs.path,
+      position: inputs.position
+    });
   } catch (error) {
     core.debug(inspect(error));
     core.setFailed(error.message);
