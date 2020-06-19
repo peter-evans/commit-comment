@@ -25,7 +25,7 @@ A GitHub action to create a comment for a commit on GitHub.
 | Name | Description | Default |
 | --- | --- | --- |
 | `token` | `GITHUB_TOKEN` or a `repo` scoped [PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line). | `GITHUB_TOKEN` |
-| `repository` | The full name of the target repository. | Current repository |
+| `repository` | The full name of the target repository. | `github.repository` (current repository) |
 | `sha` | The commit SHA. | `github.sha` OR, for `pull_request` events `github.event.pull_request.head.sha` |
 | `body` | (**required**) The contents of the comment. | |
 | `path` | Relative path of the file to comment on. | |

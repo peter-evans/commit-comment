@@ -5,7 +5,7 @@ inputs:
     description: 'The GitHub authentication token'
     default: ${{ github.token }}
   repository:
-    description: 'The target repository.'
+    description: 'The full name of the target repository.'
     default: ${{ github.repository }}
   sha:
     description: 'The commit SHA.'
