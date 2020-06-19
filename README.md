@@ -20,23 +20,25 @@ A GitHub action to create a comment for a commit on GitHub.
             [1]: https://github.com/peter-evans/commit-comment
 ```
 
-## Parameters
+## Action inputs
 
-- `token` - The GitHub authentication token. Defaults to `GITHUB_TOKEN`.
-- `sha` - The commit SHA. Defaults to the current commit.
-- `body` (**required**) - The contents of the comment.
-- `path` - Relative path of the file to comment on.
-- `position` - Line index in the diff to comment on.
+| Name | Description | Default |
+| --- | --- | --- |
+| `token` | `GITHUB_TOKEN` or a `repo` scoped [PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line). | `GITHUB_TOKEN` |
+| `repository` | The full name of the target repository. | Current repository |
+| `sha` | The commit SHA. | `github.sha` OR, for `pull_request` events `github.event.pull_request.head.sha` |
+| `body` | (**required**) The contents of the comment. | |
+| `path` | Relative path of the file to comment on. | |
+| `position` | Line index in the diff to comment on. | |
 
 ## Example
 
-Here is an example setting all of the input parameters.
+Here is an example setting optional input parameters.
 
 ```yml
       - name: Create commit comment
         uses: peter-evans/commit-comment@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           sha: 843dea1cc2e721163c20a5c876b5b155f7f3aa75
           body: |
             This is a multi-line test comment
@@ -47,6 +49,11 @@ Here is an example setting all of the input parameters.
           path: path/to/file.txt
           position: 1
 ```
+
+### Accessing commits in other repositories
+
+You can create a commit comment in another repository by using a [PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) instead of `GITHUB_TOKEN`.
+The user associated with the PAT must have write access to the repository.
 
 ## License
 

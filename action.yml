@@ -5,10 +5,10 @@ inputs:
     description: 'The GitHub authentication token'
     default: ${{ github.token }}
   repository:
-    description: 'The target repository. Defaults to the current repository.'
+    description: 'The target repository.'
     default: ${{ github.repository }}
   sha:
-    description: 'The commit SHA. Defaults to the current commit.'
+    description: 'The commit SHA.'
   body:
     description: 'The contents of the comment.'
     required: true
