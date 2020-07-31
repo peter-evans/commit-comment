@@ -50,6 +50,26 @@ Here is an example setting optional input parameters.
           position: 1
 ```
 
+### Setting the comment body from a file
+
+This example shows how file content can be read into a variable and passed to the action.
+The content must be [escaped to preserve newlines](https://github.community/t/set-output-truncates-multiline-strings/16852/3).
+
+```yml
+      - id: get-comment-body
+        run: |
+          body=$(cat comment-body.txt)
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}" 
+          echo ::set-output name=body::$body
+
+      - name: Create commit comment
+        uses: peter-evans/commit-comment@v1
+        with:
+          body: ${{ steps.get-issue-body.outputs.body }}
+```
+
 ### Accessing commits in other repositories
 
 You can create a commit comment in another repository by using a [PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) instead of `GITHUB_TOKEN`.
