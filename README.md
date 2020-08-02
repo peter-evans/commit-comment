@@ -67,7 +67,7 @@ The content must be [escaped to preserve newlines](https://github.community/t/se
       - name: Create commit comment
         uses: peter-evans/commit-comment@v1
         with:
-          body: ${{ steps.get-issue-body.outputs.body }}
+          body: ${{ steps.get-comment-body.outputs.body }}
 ```
 
 ### Accessing commits in other repositories
