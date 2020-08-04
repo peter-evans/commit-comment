@@ -24,7 +24,7 @@ A GitHub action to create a comment for a commit on GitHub.
 
 | Name | Description | Default |
 | --- | --- | --- |
-| `token` | `GITHUB_TOKEN` or a `repo` scoped [PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line). | `GITHUB_TOKEN` |
+| `token` | `GITHUB_TOKEN` or a `repo` scoped [PAT](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). | `GITHUB_TOKEN` |
 | `repository` | The full name of the target repository. | `github.repository` (current repository) |
 | `sha` | The commit SHA. | `github.sha` OR, for `pull_request` events `github.event.pull_request.head.sha` |
 | `body` | (**required**) The contents of the comment. | |
@@ -72,7 +72,7 @@ The content must be [escaped to preserve newlines](https://github.community/t/se
 
 ### Accessing commits in other repositories
 
-You can create a commit comment in another repository by using a [PAT](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) instead of `GITHUB_TOKEN`.
+You can create a commit comment in another repository by using a [PAT](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) instead of `GITHUB_TOKEN`.
 The user associated with the PAT must have write access to the repository.
 
 ## License
