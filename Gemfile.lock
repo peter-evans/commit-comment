@@ -1,3 +1,62 @@
 Biraz sakin 
 Herşey yolunda
 Nihayet 
+Dear Git users,
+
+It is my pleasure to announce that Git for Windows 2.24.1(2) is available from:
+
+        https://gitforwindows.org/
+
+Changes since Git for Windows v2.24.0(2) (November 6th 2019)
+
+This is a security bug release that fixes CVE-2019-1348, CVE-2019-1349,
+CVE-2019-1350, CVE-2019-1351, CVE-2019-1352, CVE-2019-1353,
+CVE-2019-1354, CVE-2019-1387, and CVE-2019-19604.
+
+New Features
+
+  * Comes with Git v2.24.1.
+  * Comes with tig v2.5.0.
+  * Comes with patch level 4 of the MSYS2 runtime (Git for Windows
+    flavor) based on Cygwin 3.0.7.
+  * The command-line options of git-bash.exe are now documented (call
+    git help git-bash).
+  * Comes with Git LFS v2.9.1.
+  * Comes with cURL v7.67.0.
+  * Comes with GNU Privacy Guard v2.2.18.
+
+Bug Fixes
+
+  * MinGit no longer overrides an installed Git for Windows' system
+    gitconfig.
+  * The "Check daily for updates" feature uses the Action Center again.
+  * When associating .sh files with Git Bash to allow running them by
+    double-clicking them in the Windows Explorer, shell scripts with
+    non-ASCII characters in their file name are now supported.
+
+Filename | SHA-256
+-------- | -------
+Git-2.24.1.2-64-bit.exe | 34e484936105713e7d0c2f421bf62e4cfe652f6638a9ecb5df2186c1918753e2
+Git-2.24.1.2-32-bit.exe | 611b29cc8f29241ee6a096f5b9951ef95650368c93dfe1e95f8408d97b86d50b
+PortableGit-2.24.1.2-64-bit.7z.exe | cb75e4a557e01dd27b5af5eb59dfe28adcbad21638777dd686429dd905d13899
+PortableGit-2.24.1.2-32-bit.7z.exe | 88f5525999228b0be8bb51788bfaa41b14430904bc65f1d4bbdcf441cac1f7fc
+MinGit-2.24.1.2-64-bit.zip | 83f2983fa7689109fd7be0f2a54b178ca3d5b2f5519d99aada84f5e00c3ef4c9
+MinGit-2.24.1.2-32-bit.zip | 2796a28bad7a02c72a3855eeabfc7ecf0ee346c9fbc60ece3447a4c5f549282d
+MinGit-2.24.1.2-busybox-64-bit.zip | 87adb065a254e379610c07a5b8b025469597c7d0da84fd2cca0e4376ad1b7fa4
+MinGit-2.24.1.2-busybox-32-bit.zip | abd0d3683d587e7535490b9833a253a477eca185e31c3531efbc63903977212d
+Git-2.24.1.2-64-bit.tar.bz2 | 2a023cd1cd5fca6b241225da317795a2aece9c298f736425b4fdc768a7d33bf1
+Git-2.24.1.2-32-bit.tar.bz2 | 523dd18aa5c3c55ff3c312a42b52899a410fe6b2e39a9ebfef3ec17a04681090
+pdbs-for-git-64-bit-2.24.1.2.992f077302-1.zip | b0af4f0c7d89ffb12fbda444e6b9eaf6930683ffe469a5f8c6bde45b49d4e3b7
+pdbs-for-git-32-bit-2.24.1.2.992f077302-1.zip | 2537df43b6569b232449126b6c304c299c6a95b88a54d54aa9d9d2b7ccc20a90
+
+Ciao,
+Johannes
+
+P.S.: If you wonder why this is v2.24.1(2) and not v2.24.1: The initial
+rebase broke the built-in `git add -p` and by the time this was noticed, I
+had already asked helpers to test the version, and to avoid any confusion
+"which v2.24.1 do I have?" I decided to simply not release that broken
+v2.24.1 and jump immediately to v2.24.1(2).
+
+
+
