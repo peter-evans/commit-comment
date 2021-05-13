@@ -1,4 +1,3 @@
-module.exports =
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -198,6 +197,7 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
+    process.stdout.write(os.EOL);
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;
@@ -5774,59 +5774,6 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 351:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const { inspect } = __nccwpck_require__(669);
-const core = __nccwpck_require__(186);
-const github = __nccwpck_require__(438);
-
-function getSha() {
-  if (github.context.eventName == "pull_request") {
-    return github.context.payload.pull_request.head.sha;
-  } else {
-    return github.context.sha;
-  }
-}
-
-async function run() {
-  try {
-    const inputs = {
-      token: core.getInput("token"),
-      repository: core.getInput("repository"),
-      sha: core.getInput("sha"),
-      body: core.getInput("body"),
-      path: core.getInput("path"),
-      position: core.getInput("position"),
-    };
-    core.debug(`Inputs: ${inspect(inputs)}`);
-
-    const [owner, repo] = inputs.repository.split("/");
-
-    const sha = inputs.sha ? inputs.sha : getSha();
-    core.debug(`SHA: ${sha}`);
-
-    const octokit = github.getOctokit(inputs.token);
-
-    await octokit.repos.createCommitComment({
-      owner: owner,
-      repo: repo,
-      commit_sha: sha,
-      body: inputs.body,
-      path: inputs.path,
-      position: inputs.position
-    });
-  } catch (error) {
-    core.debug(inspect(error));
-    core.setFailed(error.message);
-  }
-}
-
-run();
-
-
-/***/ }),
-
 /***/ 877:
 /***/ ((module) => {
 
@@ -5947,8 +5894,9 @@ module.exports = require("zlib");;
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		if(__webpack_module_cache__[moduleId]) {
-/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
@@ -5973,10 +5921,59 @@ module.exports = require("zlib");;
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
-/******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
-/******/ 	// module exports must be returned from runtime so entry inlining is disabled
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(351);
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+const { inspect } = __nccwpck_require__(669);
+const core = __nccwpck_require__(186);
+const github = __nccwpck_require__(438);
+
+function getSha() {
+  if (github.context.eventName == "pull_request") {
+    return github.context.payload.pull_request.head.sha;
+  } else {
+    return github.context.sha;
+  }
+}
+
+async function run() {
+  try {
+    const inputs = {
+      token: core.getInput("token"),
+      repository: core.getInput("repository"),
+      sha: core.getInput("sha"),
+      body: core.getInput("body"),
+      path: core.getInput("path"),
+      position: core.getInput("position"),
+    };
+    core.debug(`Inputs: ${inspect(inputs)}`);
+
+    const [owner, repo] = inputs.repository.split("/");
+
+    const sha = inputs.sha ? inputs.sha : getSha();
+    core.debug(`SHA: ${sha}`);
+
+    const octokit = github.getOctokit(inputs.token);
+
+    await octokit.repos.createCommitComment({
+      owner: owner,
+      repo: repo,
+      commit_sha: sha,
+      body: inputs.body,
+      path: inputs.path,
+      position: inputs.position
+    });
+  } catch (error) {
+    core.debug(inspect(error));
+    core.setFailed(error.message);
+  }
+}
+
+run();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
