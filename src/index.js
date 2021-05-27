@@ -29,7 +29,7 @@ async function run() {
 
     const octokit = github.getOctokit(inputs.token);
 
-    await octokit.repos.createCommitComment({
+    await octokit.rest.repos.createCommitComment({
       owner: owner,
       repo: repo,
       commit_sha: sha,
