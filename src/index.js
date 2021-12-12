@@ -29,14 +29,16 @@ async function run() {
 
     const octokit = github.getOctokit(inputs.token);
 
-    await octokit.rest.repos.createCommitComment({
-      owner: owner,
-      repo: repo,
-      commit_sha: sha,
-      body: inputs.body,
-      path: inputs.path,
-      position: inputs.position
-    });
+    if ("string" === typeof inputs.body && "" !== inputs.body) {
+      await octokit.rest.repos.createCommitComment({
+        owner: owner,
+        repo: repo,
+        commit_sha: sha,
+        body: inputs.body,
+        path: inputs.path,
+        position: inputs.position
+      });
+    }
   } catch (error) {
     core.debug(inspect(error));
     core.setFailed(error.message);
