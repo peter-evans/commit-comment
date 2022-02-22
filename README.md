@@ -4,7 +4,7 @@
 
 A GitHub action to create a comment for a commit on GitHub.
 
-![Commit Comment Example](https://github.com/peter-evans/commit-comment/blob/master/comment-example.png?raw=true)
+![Commit Comment Example](https://raw.githubusercontent.com/peter-evans/commit-comment/main/comment-example.png)
 
 ## Usage
 
