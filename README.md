@@ -10,7 +10,7 @@ A GitHub action to create a comment for a commit on GitHub.
 
 ```yml
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v1
+        uses: peter-evans/commit-comment@v2
         with:
           body: |
             This is a multi-line test comment
@@ -37,7 +37,7 @@ Here is an example setting optional input parameters.
 
 ```yml
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v1
+        uses: peter-evans/commit-comment@v2
         with:
           sha: 843dea1cc2e721163c20a5c876b5b155f7f3aa75
           body: |
@@ -65,7 +65,7 @@ The content must be [escaped to preserve newlines](https://github.community/t/se
           echo ::set-output name=body::$body
 
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v1
+        uses: peter-evans/commit-comment@v2
         with:
           body: ${{ steps.get-comment-body.outputs.body }}
 ```

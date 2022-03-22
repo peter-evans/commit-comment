@@ -17,7 +17,7 @@ inputs:
   position:
     description: 'Line index in the diff to comment on.'
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'
 branding:
   icon: 'message-square'  
