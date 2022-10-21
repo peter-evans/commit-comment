@@ -58,11 +58,11 @@ The content must be [escaped to preserve newlines](https://github.community/t/se
 ```yml
       - id: get-comment-body
         run: |
-          body=$(cat comment-body.txt)
-          body="${body//'%'/'%25'}"
-          body="${body//$'\n'/'%0A'}"
-          body="${body//$'\r'/'%0D'}" 
-          echo "body=$body" >> $GITHUB_OUTPUT
+          body="$(cat comment-body.txt)"
+          delimiter="$(openssl rand -hex 8)"
+          echo "body<<$delimiter" >> $GITHUB_OUTPUT
+          echo "$body" >> $GITHUB_OUTPUT
+          echo "$delimiter" >> $GITHUB_OUTPUT
 
       - name: Create commit comment
         uses: peter-evans/commit-comment@v2
