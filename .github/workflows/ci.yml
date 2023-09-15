@@ -60,6 +60,7 @@ jobs:
 
       - name: Test create commit comment
         uses: ./
+        id: cc
         with:
           body: |
             This is a multi-line test comment
@@ -67,6 +68,16 @@ jobs:
             - Created by [commit-comment][1]
 
             [1]: https://github.com/peter-evans/commit-comment
+          # reactions: '+1'
+
+      - name: Test update commit comment
+        uses: ./
+        with:
+          comment-id: ${{ steps.cc.outputs.comment-id }}
+          body: |
+            **Edit:** Some additional info
+          # reactions: eyes
+          # reactions-edit-mode: replace
 
   package:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
