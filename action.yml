@@ -16,8 +16,7 @@ inputs:
   comment-id:
     description: 'The id of the comment to update.'
   body:
-    description: 'The contents of the comment.'
-    required: true
+    description: 'The comment body. Cannot be used in conjunction with `body-path`.'
   body-path:
     description: 'The path to a file containing the comment body. Cannot be used in conjunction with `body`.'
   edit-mode:
