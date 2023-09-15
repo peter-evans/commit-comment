@@ -68,7 +68,7 @@ jobs:
             - Created by [commit-comment][1]
 
             [1]: https://github.com/peter-evans/commit-comment
-          # reactions: '+1'
+          reactions: '+1'
 
       - name: Test update commit comment
         uses: ./
@@ -76,8 +76,17 @@ jobs:
           comment-id: ${{ steps.cc.outputs.comment-id }}
           body: |
             **Edit:** Some additional info
-          # reactions: eyes
-          # reactions-edit-mode: replace
+          reactions: eyes
+          reactions-edit-mode: replace
+
+      - name: Test add reactions
+        uses: ./
+        with:
+          comment-id: ${{ steps.cc.outputs.comment-id }}
+          reactions: |
+            heart
+            hooray
+            laugh
 
   package:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

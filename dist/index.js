@@ -38,97 +38,86 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createOrUpdateCommitComment = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github = __importStar(__nccwpck_require__(5438));
-// const REACTION_TYPES = [
-//   '+1',
-//   '-1',
-//   'laugh',
-//   'confused',
-//   'heart',
-//   'hooray',
-//   'rocket',
-//   'eyes'
-// ]
-// function getReactionsSet(reactions: string[]): string[] {
-//   const reactionsSet = [
-//     ...new Set(
-//       reactions.filter(item => {
-//         if (!REACTION_TYPES.includes(item)) {
-//           core.warning(`Skipping invalid reaction '${item}'.`)
-//           return false
-//         }
-//         return true
-//       })
-//     )
-//   ]
-//   if (!reactionsSet) {
-//     throw new Error(`No valid reactions are contained in '${reactions}'.`)
-//   }
-//   return reactionsSet
-// }
-// async function addReactions(
-//   octokit,
-//   owner: string,
-//   repo: string,
-//   commentId: number,
-//   reactions: string[]
-// ) {
-//   const results = await Promise.allSettled(
-//     reactions.map(async reaction => {
-//       await octokit.rest.reactions.createForIssueComment({
-//         owner: owner,
-//         repo: repo,
-//         comment_id: commentId,
-//         content: reaction
-//       })
-//       core.info(`Setting '${reaction}' reaction on comment.`)
-//     })
-//   )
-//   for (let i = 0, l = results.length; i < l; i++) {
-//     if (results[i].status === 'fulfilled') {
-//       core.info(
-//         `Added reaction '${reactions[i]}' to comment id '${commentId}'.`
-//       )
-//     } else if (results[i].status === 'rejected') {
-//       core.warning(
-//         `Adding reaction '${reactions[i]}' to comment id '${commentId}' failed.`
-//       )
-//     }
-//   }
-// }
-// async function removeReactions(
-//   octokit,
-//   owner: string,
-//   repo: string,
-//   commentId: number,
-//   reactions: Reaction[]
-// ) {
-//   const results = await Promise.allSettled(
-//     reactions.map(async reaction => {
-//       await octokit.rest.reactions.deleteForIssueComment({
-//         owner: owner,
-//         repo: repo,
-//         comment_id: commentId,
-//         reaction_id: reaction.id
-//       })
-//       core.info(`Removing '${reaction.content}' reaction from comment.`)
-//     })
-//   )
-//   for (let i = 0, l = results.length; i < l; i++) {
-//     if (results[i].status === 'fulfilled') {
-//       core.info(
-//         `Removed reaction '${reactions[i].content}' from comment id '${commentId}'.`
-//       )
-//     } else if (results[i].status === 'rejected') {
-//       core.warning(
-//         `Removing reaction '${reactions[i].content}' from comment id '${commentId}' failed.`
-//       )
-//     }
-//   }
-// }
+const utils = __importStar(__nccwpck_require__(918));
+const util_1 = __nccwpck_require__(3837);
+const REACTION_TYPES = [
+    '+1',
+    '-1',
+    'laugh',
+    'confused',
+    'heart',
+    'hooray',
+    'rocket',
+    'eyes'
+];
+function getReactionsSet(reactions) {
+    const reactionsSet = [
+        ...new Set(reactions.filter(item => {
+            if (!REACTION_TYPES.includes(item)) {
+                core.warning(`Skipping invalid reaction '${item}'.`);
+                return false;
+            }
+            return true;
+        }))
+    ];
+    if (!reactionsSet) {
+        throw new Error(`No valid reactions are contained in '${reactions}'.`);
+    }
+    return reactionsSet;
+}
+function addReactions(octokit, owner, repo, commentId, reactions) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const results = yield Promise.allSettled(reactions.map((reaction) => __awaiter(this, void 0, void 0, function* () {
+            yield octokit.rest.reactions.createForCommitComment({
+                owner: owner,
+                repo: repo,
+                comment_id: commentId,
+                content: reaction
+            });
+            core.info(`Setting '${reaction}' reaction on comment.`);
+        })));
+        for (let i = 0, l = results.length; i < l; i++) {
+            if (results[i].status === 'fulfilled') {
+                core.info(`Added reaction '${reactions[i]}' to comment id '${commentId}'.`);
+            }
+            else if (results[i].status === 'rejected') {
+                core.warning(`Adding reaction '${reactions[i]}' to comment id '${commentId}' failed.`);
+            }
+        }
+    });
+}
+function removeReactions(octokit, owner, repo, commentId, reactions) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const results = yield Promise.allSettled(reactions.map((reaction) => __awaiter(this, void 0, void 0, function* () {
+            yield octokit.rest.reactions.deleteForCommitComment({
+                owner: owner,
+                repo: repo,
+                comment_id: commentId,
+                reaction_id: reaction.id
+            });
+            core.info(`Removing '${reaction.content}' reaction from comment.`);
+        })));
+        for (let i = 0, l = results.length; i < l; i++) {
+            if (results[i].status === 'fulfilled') {
+                core.info(`Removed reaction '${reactions[i].content}' from comment id '${commentId}'.`);
+            }
+            else if (results[i].status === 'rejected') {
+                core.warning(`Removing reaction '${reactions[i].content}' from comment id '${commentId}' failed.`);
+            }
+        }
+    });
+}
 function appendSeparatorTo(body, separator) {
     switch (separator) {
         case 'newline':
@@ -188,54 +177,63 @@ function updateCommitComment(octokit, owner, repo, commentId, body, editMode, ap
         return commentId;
     });
 }
-// async function getAuthenticatedUser(octokit): Promise<string> {
-//   try {
-//     const {data: user} = await octokit.rest.users.getAuthenticated()
-//     return user.login
-//   } catch (error) {
-//     if (
-//       utils
-//         .getErrorMessage(error)
-//         .includes('Resource not accessible by integration')
-//     ) {
-//       // In this case we can assume the token is the default GITHUB_TOKEN and
-//       // therefore the user is 'github-actions[bot]'.
-//       return 'github-actions[bot]'
-//     } else {
-//       throw error
-//     }
-//   }
-// }
-// type Reaction = {
-//   id: number
-//   content: string
-// }
-// async function getCommentReactionsForUser(
-//   octokit,
-//   owner: string,
-//   repo: string,
-//   commentId: number,
-//   user: string
-// ): Promise<Reaction[]> {
-//   const userReactions: Reaction[] = []
-//   for await (const {data: reactions} of octokit.paginate.iterator(
-//     octokit.rest.reactions.listForIssueComment,
-//     {
-//       owner,
-//       repo,
-//       comment_id: commentId,
-//       per_page: 100
-//     }
-//   )) {
-//     const filteredReactions: Reaction[] = reactions
-//       .filter(reaction => reaction.user.login === user)
-//       .map(reaction => {
-//         return {id: reaction.id, content: reaction.content}
-//       })
-//     userReactions.push(...filteredReactions)
-//   }
-//   return userReactions
-// }
+function getAuthenticatedUser(octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { data: user } = yield octokit.rest.users.getAuthenticated();
+            return user.login;
+        }
+        catch (error) {
+            if (utils
+                .getErrorMessage(error)
+                .includes('Resource not accessible by integration')) {
+                // In this case we can assume the token is the default GITHUB_TOKEN and
+                // therefore the user is 'github-actions[bot]'.
+                return 'github-actions[bot]';
+            }
+            else {
+                throw error;
+            }
+        }
+    });
+}
+function getCommentReactionsForUser(octokit, owner, repo, commentId, user) {
+    var _a, e_1, _b, _c;
+    return __awaiter(this, void 0, void 0, function* () {
+        const userReactions = [];
+        try {
+            for (var _d = true, _e = __asyncValues(octokit.paginate.iterator(octokit.rest.reactions.listForCommitComment, {
+                owner,
+                repo,
+                comment_id: commentId,
+                per_page: 100
+            })), _f; _f = yield _e.next(), _a = _f.done, !_a;) {
+                _c = _f.value;
+                _d = false;
+                try {
+                    const { data: reactions } = _c;
+                    const filteredReactions = reactions
+                        .filter(reaction => reaction.user.login === user)
+                        .map(reaction => {
+                        return { id: reaction.id, content: reaction.content };
+                    });
+                    userReactions.push(...filteredReactions);
+                }
+                finally {
+                    _d = true;
+                }
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (!_d && !_a && (_b = _e.return)) yield _b.call(_e);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        return userReactions;
+    });
+}
 function createOrUpdateCommitComment(inputs, body) {
     return __awaiter(this, void 0, void 0, function* () {
         const [owner, repo] = inputs.repository.split('/');
@@ -244,26 +242,18 @@ function createOrUpdateCommitComment(inputs, body) {
             ? yield updateCommitComment(octokit, owner, repo, inputs.commentId, body, inputs.editMode, inputs.appendSeparator)
             : yield createCommitComment(octokit, owner, repo, inputs.sha, inputs.path, inputs.position, body);
         core.setOutput('comment-id', commentId);
-        // if (inputs.reactions) {
-        //   const reactionsSet = getReactionsSet(inputs.reactions)
-        //   // Remove reactions if reactionsEditMode is 'replace'
-        //   if (inputs.commentId && inputs.reactionsEditMode === 'replace') {
-        //     const authenticatedUser = await getAuthenticatedUser(octokit)
-        //     const userReactions = await getCommentReactionsForUser(
-        //       octokit,
-        //       owner,
-        //       repo,
-        //       commentId,
-        //       authenticatedUser
-        //     )
-        //     core.debug(inspect(userReactions))
-        //     const reactionsToRemove = userReactions.filter(
-        //       reaction => !reactionsSet.includes(reaction.content)
-        //     )
-        //     await removeReactions(octokit, owner, repo, commentId, reactionsToRemove)
-        //   }
-        //   await addReactions(octokit, owner, repo, commentId, reactionsSet)
-        // }
+        if (inputs.reactions) {
+            const reactionsSet = getReactionsSet(inputs.reactions);
+            // Remove reactions if reactionsEditMode is 'replace'
+            if (inputs.commentId && inputs.reactionsEditMode === 'replace') {
+                const authenticatedUser = yield getAuthenticatedUser(octokit);
+                const userReactions = yield getCommentReactionsForUser(octokit, owner, repo, commentId, authenticatedUser);
+                core.debug((0, util_1.inspect)(userReactions));
+                const reactionsToRemove = userReactions.filter(reaction => !reactionsSet.includes(reaction.content));
+                yield removeReactions(octokit, owner, repo, commentId, reactionsToRemove);
+            }
+            yield addReactions(octokit, owner, repo, commentId, reactionsSet);
+        }
     });
 }
 exports.createOrUpdateCommitComment = createOrUpdateCommitComment;
