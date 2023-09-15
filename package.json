@@ -2,7 +2,7 @@
   "name": "commit-comment",
   "version": "3.0.0",
   "description": "Create a comment for a commit on GitHub",
-  "main": "src/index.js",
+  "main": "lib/main.js",
   "scripts": {
     "build": "tsc && ncc build",
     "format": "prettier --write '**/*.ts'",
