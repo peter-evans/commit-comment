@@ -88,6 +88,23 @@ jobs:
             hooray
             laugh
 
+      - name: Test create commit comment from file
+        uses: ./
+        id: cc2
+        with:
+          body-path: .github/comment-body.md
+          reactions: |
+            +1
+
+      - name: Test update commit comment from file
+        uses: ./
+        with:
+          comment-id: ${{ steps.cc2.outputs.comment-id }}
+          body-path: .github/comment-body-addition.md
+          append-separator: space
+          reactions: eyes, rocket
+          reactions-edit-mode: replace
+
   package:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [test]
