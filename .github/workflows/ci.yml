@@ -18,17 +18,17 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      sha: ${{ steps.vars.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 20.x
           cache: npm
       - run: npm ci
+      - run: npm run build
+      - run: npm run format-check
+      - run: npm run lint
       - run: npm run test
-      - run: npm run package
       - uses: actions/upload-artifact@v3
         with:
           name: dist
@@ -60,6 +60,7 @@ jobs:
 
       - name: Test create commit comment
         uses: ./
+        id: cc
         with:
           body: |
             This is a multi-line test comment
@@ -67,6 +68,42 @@ jobs:
             - Created by [commit-comment][1]
 
             [1]: https://github.com/peter-evans/commit-comment
+          reactions: '+1'
+
+      - name: Test update commit comment
+        uses: ./
+        with:
+          comment-id: ${{ steps.cc.outputs.comment-id }}
+          body: |
+            **Edit:** Some additional info
+          reactions: eyes
+          reactions-edit-mode: replace
+
+      - name: Test add reactions
+        uses: ./
+        with:
+          comment-id: ${{ steps.cc.outputs.comment-id }}
+          reactions: |
+            heart
+            hooray
+            laugh
+
+      - name: Test create commit comment from file
+        uses: ./
+        id: cc2
+        with:
+          body-path: .github/comment-body.md
+          reactions: |
+            +1
+
+      - name: Test update commit comment from file
+        uses: ./
+        with:
+          comment-id: ${{ steps.cc2.outputs.comment-id }}
+          body-path: .github/comment-body-addition.md
+          append-separator: space
+          reactions: eyes, rocket
+          reactions-edit-mode: replace
 
   package:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'

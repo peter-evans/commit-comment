@@ -1,6 +1,450 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 2914:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.createOrUpdateCommitComment = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const utils = __importStar(__nccwpck_require__(918));
+const util_1 = __nccwpck_require__(3837);
+const REACTION_TYPES = [
+    '+1',
+    '-1',
+    'laugh',
+    'confused',
+    'heart',
+    'hooray',
+    'rocket',
+    'eyes'
+];
+function getReactionsSet(reactions) {
+    const reactionsSet = [
+        ...new Set(reactions.filter(item => {
+            if (!REACTION_TYPES.includes(item)) {
+                core.warning(`Skipping invalid reaction '${item}'.`);
+                return false;
+            }
+            return true;
+        }))
+    ];
+    if (!reactionsSet) {
+        throw new Error(`No valid reactions are contained in '${reactions}'.`);
+    }
+    return reactionsSet;
+}
+function addReactions(octokit, owner, repo, commentId, reactions) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const results = yield Promise.allSettled(reactions.map((reaction) => __awaiter(this, void 0, void 0, function* () {
+            yield octokit.rest.reactions.createForCommitComment({
+                owner: owner,
+                repo: repo,
+                comment_id: commentId,
+                content: reaction
+            });
+            core.info(`Setting '${reaction}' reaction on comment.`);
+        })));
+        for (let i = 0, l = results.length; i < l; i++) {
+            if (results[i].status === 'fulfilled') {
+                core.info(`Added reaction '${reactions[i]}' to comment id '${commentId}'.`);
+            }
+            else if (results[i].status === 'rejected') {
+                core.warning(`Adding reaction '${reactions[i]}' to comment id '${commentId}' failed.`);
+            }
+        }
+    });
+}
+function removeReactions(octokit, owner, repo, commentId, reactions) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const results = yield Promise.allSettled(reactions.map((reaction) => __awaiter(this, void 0, void 0, function* () {
+            yield octokit.rest.reactions.deleteForCommitComment({
+                owner: owner,
+                repo: repo,
+                comment_id: commentId,
+                reaction_id: reaction.id
+            });
+            core.info(`Removing '${reaction.content}' reaction from comment.`);
+        })));
+        for (let i = 0, l = results.length; i < l; i++) {
+            if (results[i].status === 'fulfilled') {
+                core.info(`Removed reaction '${reactions[i].content}' from comment id '${commentId}'.`);
+            }
+            else if (results[i].status === 'rejected') {
+                core.warning(`Removing reaction '${reactions[i].content}' from comment id '${commentId}' failed.`);
+            }
+        }
+    });
+}
+function appendSeparatorTo(body, separator) {
+    switch (separator) {
+        case 'newline':
+            return body + '\n';
+        case 'space':
+            return body + ' ';
+        default: // none
+            return body;
+    }
+}
+function truncateBody(body) {
+    // 65536 characters is the maximum allowed for issue comments.
+    if (body.length > 65536) {
+        core.warning(`Comment body is too long. Truncating to 65536 characters.`);
+        return body.substring(0, 65536);
+    }
+    return body;
+}
+function createCommitComment(octokit, owner, repo, sha, path, position, body) {
+    return __awaiter(this, void 0, void 0, function* () {
+        body = truncateBody(body);
+        const { data: comment } = yield octokit.rest.repos.createCommitComment({
+            owner: owner,
+            repo: repo,
+            commit_sha: sha,
+            body: body,
+            path: path,
+            position: position
+        });
+        core.info(`Created comment id '${comment.id}' on sha '${sha}'.`);
+        return comment.id;
+    });
+}
+function updateCommitComment(octokit, owner, repo, commentId, body, editMode, appendSeparator) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (body) {
+            let commentBody = '';
+            if (editMode == 'append') {
+                // Get the comment body
+                const { data: comment } = yield octokit.rest.repos.getCommitComment({
+                    owner: owner,
+                    repo: repo,
+                    comment_id: commentId
+                });
+                commentBody = appendSeparatorTo(comment.body ? comment.body : '', appendSeparator);
+            }
+            commentBody = truncateBody(commentBody + body);
+            core.debug(`Comment body: ${commentBody}`);
+            yield octokit.rest.repos.updateCommitComment({
+                owner: owner,
+                repo: repo,
+                comment_id: commentId,
+                body: commentBody
+            });
+            core.info(`Updated comment id '${commentId}'.`);
+        }
+        return commentId;
+    });
+}
+function getAuthenticatedUser(octokit) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { data: user } = yield octokit.rest.users.getAuthenticated();
+            return user.login;
+        }
+        catch (error) {
+            if (utils
+                .getErrorMessage(error)
+                .includes('Resource not accessible by integration')) {
+                // In this case we can assume the token is the default GITHUB_TOKEN and
+                // therefore the user is 'github-actions[bot]'.
+                return 'github-actions[bot]';
+            }
+            else {
+                throw error;
+            }
+        }
+    });
+}
+function getCommentReactionsForUser(octokit, owner, repo, commentId, user) {
+    var _a, e_1, _b, _c;
+    return __awaiter(this, void 0, void 0, function* () {
+        const userReactions = [];
+        try {
+            for (var _d = true, _e = __asyncValues(octokit.paginate.iterator(octokit.rest.reactions.listForCommitComment, {
+                owner,
+                repo,
+                comment_id: commentId,
+                per_page: 100
+            })), _f; _f = yield _e.next(), _a = _f.done, !_a;) {
+                _c = _f.value;
+                _d = false;
+                try {
+                    const { data: reactions } = _c;
+                    const filteredReactions = reactions
+                        .filter(reaction => reaction.user.login === user)
+                        .map(reaction => {
+                        return { id: reaction.id, content: reaction.content };
+                    });
+                    userReactions.push(...filteredReactions);
+                }
+                finally {
+                    _d = true;
+                }
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (!_d && !_a && (_b = _e.return)) yield _b.call(_e);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        return userReactions;
+    });
+}
+function createOrUpdateCommitComment(inputs, body) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const [owner, repo] = inputs.repository.split('/');
+        const octokit = github.getOctokit(inputs.token);
+        const commentId = inputs.commentId
+            ? yield updateCommitComment(octokit, owner, repo, inputs.commentId, body, inputs.editMode, inputs.appendSeparator)
+            : yield createCommitComment(octokit, owner, repo, inputs.sha, inputs.path, inputs.position, body);
+        core.setOutput('comment-id', commentId);
+        if (inputs.reactions) {
+            const reactionsSet = getReactionsSet(inputs.reactions);
+            // Remove reactions if reactionsEditMode is 'replace'
+            if (inputs.commentId && inputs.reactionsEditMode === 'replace') {
+                const authenticatedUser = yield getAuthenticatedUser(octokit);
+                const userReactions = yield getCommentReactionsForUser(octokit, owner, repo, commentId, authenticatedUser);
+                core.debug((0, util_1.inspect)(userReactions));
+                const reactionsToRemove = userReactions.filter(reaction => !reactionsSet.includes(reaction.content));
+                yield removeReactions(octokit, owner, repo, commentId, reactionsToRemove);
+            }
+            yield addReactions(octokit, owner, repo, commentId, reactionsSet);
+        }
+    });
+}
+exports.createOrUpdateCommitComment = createOrUpdateCommitComment;
+
+
+/***/ }),
+
+/***/ 3109:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const github = __importStar(__nccwpck_require__(5438));
+const commit_comment_1 = __nccwpck_require__(2914);
+const fs_1 = __nccwpck_require__(7147);
+const util_1 = __nccwpck_require__(3837);
+const utils = __importStar(__nccwpck_require__(918));
+function getSha() {
+    if (github.context.eventName == 'pull_request') {
+        return github.context.payload.pull_request.head.sha;
+    }
+    else {
+        return github.context.sha;
+    }
+}
+function getBody(inputs) {
+    if (inputs.body) {
+        return inputs.body;
+    }
+    else if (inputs.bodyPath) {
+        return (0, fs_1.readFileSync)(inputs.bodyPath, 'utf-8');
+    }
+    else {
+        return '';
+    }
+}
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const inputs = {
+                token: core.getInput('token'),
+                repository: core.getInput('repository'),
+                sha: core.getInput('sha'),
+                path: core.getInput('path'),
+                position: core.getInput('position'),
+                commentId: Number(core.getInput('comment-id')),
+                body: core.getInput('body'),
+                bodyPath: core.getInput('body-path') || core.getInput('body-file'),
+                editMode: core.getInput('edit-mode'),
+                appendSeparator: core.getInput('append-separator'),
+                reactions: utils.getInputAsArray('reactions'),
+                reactionsEditMode: core.getInput('reactions-edit-mode')
+            };
+            core.debug(`Inputs: ${(0, util_1.inspect)(inputs)}`);
+            if (!['append', 'replace'].includes(inputs.editMode)) {
+                throw new Error(`Invalid edit-mode '${inputs.editMode}'.`);
+            }
+            if (!['append', 'replace'].includes(inputs.reactionsEditMode)) {
+                throw new Error(`Invalid reactions edit-mode '${inputs.reactionsEditMode}'.`);
+            }
+            if (!['newline', 'space', 'none'].includes(inputs.appendSeparator)) {
+                throw new Error(`Invalid append-separator '${inputs.appendSeparator}'.`);
+            }
+            if (inputs.bodyPath && inputs.body) {
+                throw new Error("Only one of 'body' or 'body-path' can be set.");
+            }
+            if (inputs.bodyPath) {
+                if (!(0, fs_1.existsSync)(inputs.bodyPath)) {
+                    throw new Error(`File '${inputs.bodyPath}' does not exist.`);
+                }
+            }
+            const body = getBody(inputs);
+            if (inputs.commentId) {
+                if (!body && !inputs.reactions) {
+                    throw new Error("Missing comment 'body', 'body-path', or 'reactions'.");
+                }
+            }
+            else if (inputs.sha) {
+                if (!body) {
+                    throw new Error("Missing comment 'body' or 'body-path'.");
+                }
+            }
+            else {
+                inputs.sha = getSha();
+                if (!body) {
+                    throw new Error("Missing comment 'body' or 'body-path'.");
+                }
+            }
+            (0, commit_comment_1.createOrUpdateCommitComment)(inputs, body);
+        }
+        catch (error) {
+            core.debug((0, util_1.inspect)(error));
+            const errMsg = utils.getErrorMessage(error);
+            core.setFailed(errMsg);
+            if (errMsg == 'Resource not accessible by integration') {
+                core.error(`See this action's readme for details about this error`);
+            }
+        }
+    });
+}
+run();
+
+
+/***/ }),
+
+/***/ 918:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getErrorMessage = exports.getStringAsArray = exports.getInputAsArray = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+function getInputAsArray(name, options) {
+    return getStringAsArray(core.getInput(name, options));
+}
+exports.getInputAsArray = getInputAsArray;
+function getStringAsArray(str) {
+    return str
+        .split(/[\n,]+/)
+        .map(s => s.trim())
+        .filter(x => x !== '');
+}
+exports.getStringAsArray = getStringAsArray;
+function getErrorMessage(error) {
+    if (error instanceof Error)
+        return error.message;
+    return String(error);
+}
+exports.getErrorMessage = getErrorMessage;
+
+
+/***/ }),
+
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -9681,58 +10125,12 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-const { inspect } = __nccwpck_require__(3837);
-const core = __nccwpck_require__(2186);
-const github = __nccwpck_require__(5438);
-
-function getSha() {
-  if (github.context.eventName == "pull_request") {
-    return github.context.payload.pull_request.head.sha;
-  } else {
-    return github.context.sha;
-  }
-}
-
-async function run() {
-  try {
-    const inputs = {
-      token: core.getInput("token"),
-      repository: core.getInput("repository"),
-      sha: core.getInput("sha"),
-      body: core.getInput("body"),
-      path: core.getInput("path"),
-      position: core.getInput("position"),
-    };
-    core.debug(`Inputs: ${inspect(inputs)}`);
-
-    const [owner, repo] = inputs.repository.split("/");
-
-    const sha = inputs.sha ? inputs.sha : getSha();
-    core.debug(`SHA: ${sha}`);
-
-    const octokit = github.getOctokit(inputs.token);
-
-    await octokit.rest.repos.createCommitComment({
-      owner: owner,
-      repo: repo,
-      commit_sha: sha,
-      body: inputs.body,
-      path: inputs.path,
-      position: inputs.position
-    });
-  } catch (error) {
-    core.debug(inspect(error));
-    core.setFailed(error.message);
-  }
-}
-
-run();
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(3109);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
