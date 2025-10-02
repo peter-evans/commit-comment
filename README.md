@@ -14,7 +14,7 @@ The SHA defaults to `github.sha` OR, for `pull_request` events `github.event.pul
 
 ```yml
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           body: |
             This is a multi-line test comment
@@ -29,7 +29,7 @@ The SHA defaults to `github.sha` OR, for `pull_request` events `github.event.pul
 
 ```yml
       - name: Update commit comment
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           comment-id: 557858210
           body: |
@@ -41,7 +41,7 @@ The SHA defaults to `github.sha` OR, for `pull_request` events `github.event.pul
 
 ```yml
       - name: Add reactions
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           comment-id: 557858210
           reactions: |
@@ -78,7 +78,7 @@ Note that in order to read the step output the action step must have an id.
 
 ```yml
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         id: cc
         with:
           body: |
@@ -92,7 +92,7 @@ Note that in order to read the step output the action step must have an id.
 
 ```yml
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           body-path: 'comment-body.md'
 ```
@@ -117,7 +117,7 @@ The template is rendered using the [render-template](https://github.com/chuhlomi
             bar: that
 
       - name: Create commit comment
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           body: ${{ steps.template.outputs.result }}
 ```
