@@ -34,7 +34,7 @@ outputs:
   comment-id:
     description: 'The id of the created commit comment'
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'dist/index.js'
 branding:
   icon: 'message-square'  
