@@ -22,13 +22,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -46,7 +56,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createOrUpdateCommitComment = void 0;
+exports.createOrUpdateCommitComment = createOrUpdateCommitComment;
 const core = __importStar(__nccwpck_require__(7484));
 const github = __importStar(__nccwpck_require__(3228));
 const utils = __importStar(__nccwpck_require__(9277));
@@ -198,8 +208,8 @@ function getAuthenticatedUser(octokit) {
     });
 }
 function getCommentReactionsForUser(octokit, owner, repo, commentId, user) {
-    var _a, e_1, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
+        var _a, e_1, _b, _c;
         const userReactions = [];
         try {
             for (var _d = true, _e = __asyncValues(octokit.paginate.iterator(octokit.rest.reactions.listForCommitComment, {
@@ -207,21 +217,16 @@ function getCommentReactionsForUser(octokit, owner, repo, commentId, user) {
                 repo,
                 comment_id: commentId,
                 per_page: 100
-            })), _f; _f = yield _e.next(), _a = _f.done, !_a;) {
+            })), _f; _f = yield _e.next(), _a = _f.done, !_a; _d = true) {
                 _c = _f.value;
                 _d = false;
-                try {
-                    const { data: reactions } = _c;
-                    const filteredReactions = reactions
-                        .filter(reaction => reaction.user.login === user)
-                        .map(reaction => {
-                        return { id: reaction.id, content: reaction.content };
-                    });
-                    userReactions.push(...filteredReactions);
-                }
-                finally {
-                    _d = true;
-                }
+                const { data: reactions } = _c;
+                const filteredReactions = reactions
+                    .filter(reaction => reaction.user.login === user)
+                    .map(reaction => {
+                    return { id: reaction.id, content: reaction.content };
+                });
+                userReactions.push(...filteredReactions);
             }
         }
         catch (e_1_1) { e_1 = { error: e_1_1 }; }
@@ -256,7 +261,6 @@ function createOrUpdateCommitComment(inputs, body) {
         }
     });
 }
-exports.createOrUpdateCommitComment = createOrUpdateCommitComment;
 
 
 /***/ }),
@@ -282,13 +286,23 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -414,33 +428,42 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getErrorMessage = exports.getStringAsArray = exports.getInputAsArray = void 0;
+exports.getInputAsArray = getInputAsArray;
+exports.getStringAsArray = getStringAsArray;
+exports.getErrorMessage = getErrorMessage;
 const core = __importStar(__nccwpck_require__(7484));
 function getInputAsArray(name, options) {
     return getStringAsArray(core.getInput(name, options));
 }
-exports.getInputAsArray = getInputAsArray;
 function getStringAsArray(str) {
     return str
         .split(/[\n,]+/)
         .map(s => s.trim())
         .filter(x => x !== '');
 }
-exports.getStringAsArray = getStringAsArray;
 function getErrorMessage(error) {
     if (error instanceof Error)
         return error.message;
     return String(error);
 }
-exports.getErrorMessage = getErrorMessage;
 
 
 /***/ }),
